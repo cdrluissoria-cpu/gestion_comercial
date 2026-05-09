@@ -664,7 +664,8 @@ a { color: var(--primary); text-decoration: none; }
 /* ----- Mobile responsivo ----- */
 /* Estilos base: estos elementos están ocultos en desktop, visibles en mobile */
 .topbar-mobile { display: none; }
-.nav-mas { display: none; }
+.topbar-menu-btn { display: none; }
+.drawer-backdrop { display: none; }
 
 @media (max-width: 900px) {
   :root { --sidebar-width: 0; }
@@ -680,9 +681,18 @@ a { color: var(--primary); text-decoration: none; }
     height: 56px;
     background: var(--surface);
     border-bottom: 1px solid var(--border);
-    padding: 0 16px;
+    padding: 0 12px;
     z-index: 40;
   }
+  .topbar-menu-btn {
+    display: grid;
+    place-items: center;
+    width: 40px; height: 40px;
+    border-radius: 8px;
+    color: var(--text);
+    flex-shrink: 0;
+  }
+  .topbar-menu-btn:active { background: var(--surface-2); }
   .topbar-logo {
     width: 32px; height: 32px;
     border-radius: 8px;
@@ -705,54 +715,72 @@ a { color: var(--primary); text-decoration: none; }
     white-space: nowrap;
   }
 
-  /* === NAVEGACIÓN INFERIOR (barra de abajo, estilo app) === */
+  /* === SIDEBAR COMO DRAWER (panel lateral deslizante) ===
+     Por defecto está fuera de pantalla. Cuando se agrega .drawer-open
+     vuelve a su lugar visible. */
   .sidebar {
     position: fixed !important;
+    top: 0 !important;
     bottom: 0 !important;
     left: 0 !important;
-    right: 0 !important;
-    top: auto !important;
-    width: 100% !important;
-    height: auto !important;
+    right: auto !important;
+    width: 82% !important;
+    max-width: 300px !important;
+    height: 100vh !important;
+    transform: translateX(-100%);
+    transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+    z-index: 60;
     display: flex !important;
-    flex-direction: row !important;
-    flex-wrap: nowrap !important;
-    overflow: visible;
-    border-right: none;
-    border-top: 1px solid var(--border);
-    padding: 6px 4px 10px;
-    z-index: 50;
-    gap: 0;
-    background: var(--surface);
-    box-shadow: 0 -4px 16px rgba(0,0,0,0.06);
-    justify-content: space-around;
-  }
-  /* Soporte de "safe area" en iPhone (notch / home bar) — opcional, no rompe en Android */
-  @supports (padding: max(0px)) {
-    .sidebar { padding-bottom: max(10px, env(safe-area-inset-bottom)); }
-  }
-  .sidebar-brand, .sidebar-footer { display: none !important; }
-
-  /* Nav: solo 5 items en la barra inferior (los marcados como mobilePriority + el botón Más) */
-  .nav-item {
-    flex: 1 1 0 !important;
     flex-direction: column !important;
-    width: auto !important;
-    height: auto !important;
-    gap: 3px;
-    padding: 8px 4px;
-    font-size: 10px;
-    border-radius: 8px;
-    min-width: 0;
-    max-width: 80px;
+    overflow-y: auto;
+    box-shadow: 4px 0 24px rgba(0,0,0,0.12);
+    border-right: 1px solid var(--border);
+    border-top: none;
+    padding: 18px 14px;
   }
-  .nav-item svg { width: 22px; height: 22px; }
-  .nav-secondary { display: none !important; } /* Módulos secundarios se ocultan en mobile */
-  .nav-mas { display: flex !important; }       /* El botón "Más" aparece solo en mobile */
+  .sidebar.drawer-open {
+    transform: translateX(0);
+  }
+  /* En el drawer, mostramos el header del negocio y los items igual que en desktop */
+  .sidebar-brand { display: flex !important; }
+  .sidebar-footer { display: block !important; }
+
+  /* Backdrop oscuro detrás del drawer */
+  .drawer-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    backdrop-filter: blur(2px);
+    z-index: 55;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s;
+  }
+  .drawer-backdrop.open {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  /* Items del nav: en el drawer, vuelven al estilo normal vertical (icono + texto al costado) */
+  .nav-item {
+    flex: 0 0 auto !important;
+    flex-direction: row !important;
+    width: 100% !important;
+    max-width: none !important;
+    height: auto !important;
+    justify-content: flex-start !important;
+    padding: 12px 14px !important;
+    font-size: 14px !important;
+    gap: 12px !important;
+  }
+  .nav-item svg { width: 20px !important; height: 20px !important; }
+  .nav-secondary { display: flex !important; }   /* En el drawer todos los items son visibles */
+  .nav-mas { display: none !important; }         /* "Más" no hace falta porque están todos */
 
   /* === ÁREA DE CONTENIDO === */
-  /* padding-top deja espacio para topbar (56) + 16, padding-bottom para bottombar (~64) + 28 */
-  .content { padding: 72px 14px 92px; }
+  /* Solo padding-top para topbar (56px). Sin bottom-bar, no necesita padding abajo. */
+  .content { padding: 72px 14px 24px; }
 
   /* === HEADERS DE PÁGINA === */
   .page-header {
@@ -828,7 +856,6 @@ a { color: var(--primary); text-decoration: none; }
     padding: 16px 20px 14px;
     position: relative;
   }
-  /* "Drag handle" decorativo arriba del modal — comunica que es un bottom sheet */
   .modal-header::before {
     content: '';
     position: absolute;
@@ -841,8 +868,8 @@ a { color: var(--primary); text-decoration: none; }
   .modal-title { font-size: 17px; }
   .modal-body { padding: 20px; }
   .modal-footer {
-    padding: 14px 20px calc(14px + env(safe-area-inset-bottom));
-    flex-direction: column-reverse; /* en mobile el botón principal queda arriba (más cerca del dedo) */
+    padding: 14px 20px;
+    flex-direction: column-reverse;
     gap: 8px;
   }
   .modal-footer .btn { width: 100%; }
@@ -861,7 +888,6 @@ a { color: var(--primary); text-decoration: none; }
 /* En pantallas muy chicas (teléfonos compactos) — apretar más todavía */
 @media (max-width: 380px) {
   .stats-grid { grid-template-columns: 1fr; }
-  .nav-item { font-size: 9px; }
   .page-title { font-size: 20px; }
   .stat-value { font-size: 19px; }
 }
@@ -870,6 +896,9 @@ a { color: var(--primary); text-decoration: none; }
 <body>
   <!-- TOPBAR MOBILE (solo visible en pantallas chicas) -->
   <header class="topbar-mobile" id="topbarMobile">
+    <button class="topbar-menu-btn" id="topbarMenuBtn" aria-label="Abrir menú">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="22" height="22"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
     <div class="topbar-logo" id="topbarLogo">M</div>
     <div class="topbar-name" id="topbarName">Mi Negocio</div>
   </header>
@@ -2691,10 +2720,33 @@ function navigate(id) {
   const content = $('#content');
   content.innerHTML = '';
   content.appendChild(item.module.render());
+  // Cerrar el drawer si está abierto (mobile)
+  toggleDrawer(false);
   // Guardar en URL (sin reload) para volver más fácil.
   // try/catch porque algunos entornos con sandbox (vistas previas, iframes)
   // no permiten modificar la URL. Si falla, el sistema sigue funcionando igual.
   try { history.replaceState(null, '', '#' + id); } catch(e) { /* entorno sandbox: ignorar */ }
+}
+
+/**
+ * Abre o cierra el drawer mobile (panel lateral).
+ * Si no se pasa parámetro, alterna el estado actual.
+ */
+function toggleDrawer(open) {
+  const sidebar = $('#sidebar');
+  if (!sidebar) return;
+  let backdrop = $('#drawerBackdrop');
+  if (!backdrop) {
+    backdrop = el('div', {
+      id: 'drawerBackdrop',
+      class: 'drawer-backdrop',
+      onclick: () => toggleDrawer(false)
+    });
+    document.body.appendChild(backdrop);
+  }
+  if (open === undefined) open = !sidebar.classList.contains('drawer-open');
+  sidebar.classList.toggle('drawer-open', open);
+  backdrop.classList.toggle('open', open);
 }
 
 /* ============================================================
@@ -2738,6 +2790,10 @@ function init() {
   applyBranding();
   buildNav();
 
+  // Conectar el botón hamburguesa de la topbar mobile
+  const menuBtn = $('#topbarMenuBtn');
+  if (menuBtn) menuBtn.addEventListener('click', () => toggleDrawer());
+
   // Ruta inicial desde el hash o dashboard
   const hash = location.hash.slice(1);
   navigate(hash && NAV_ITEMS.find(i => i.id === hash) ? hash : 'dashboard');
@@ -2745,6 +2801,7 @@ function init() {
   // Atajos de teclado
   document.addEventListener('keydown', e => {
     if (e.ctrlKey && e.key === '/') { e.preventDefault(); navigate('ventas'); }
+    if (e.key === 'Escape') toggleDrawer(false);
   });
 }
 
