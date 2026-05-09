@@ -662,42 +662,207 @@ a { color: var(--primary); text-decoration: none; }
 }
 
 /* ----- Mobile responsivo ----- */
+/* Estilos base: estos elementos están ocultos en desktop, visibles en mobile */
+.topbar-mobile { display: none; }
+.nav-mas { display: none; }
+
 @media (max-width: 900px) {
   :root { --sidebar-width: 0; }
   .app { grid-template-columns: 1fr; }
+
+  /* === BARRA SUPERIOR MOBILE === */
+  .topbar-mobile {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    height: 56px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0 16px;
+    z-index: 40;
+  }
+  .topbar-logo {
+    width: 32px; height: 32px;
+    border-radius: 8px;
+    background: var(--primary);
+    color: white;
+    display: grid; place-items: center;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 14px;
+    background-size: cover;
+    background-position: center;
+    flex-shrink: 0;
+  }
+  .topbar-name {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 15px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* === NAVEGACIÓN INFERIOR (barra de abajo, estilo app) === */
   .sidebar {
     position: fixed;
     bottom: 0; left: 0; right: 0;
     top: auto;
     height: auto;
     flex-direction: row;
-    overflow-x: auto;
+    overflow: visible;
     border-right: none;
     border-top: 1px solid var(--border);
-    padding: 8px;
+    padding: 6px 4px calc(6px + env(safe-area-inset-bottom));
     z-index: 50;
-    gap: 4px;
+    gap: 0;
     background: var(--surface);
-    box-shadow: 0 -4px 16px rgba(0,0,0,0.04);
+    box-shadow: 0 -4px 16px rgba(0,0,0,0.06);
+    justify-content: space-around;
   }
   .sidebar-brand, .sidebar-footer { display: none; }
+
+  /* Nav: solo 5 items en la barra inferior (los marcados como mobilePriority + el botón Más) */
   .nav-item {
+    flex: 1;
     flex-direction: column;
-    gap: 2px;
-    padding: 6px 10px;
+    gap: 3px;
+    padding: 8px 4px;
     font-size: 10px;
-    flex-shrink: 0;
-    min-width: 64px;
+    border-radius: 8px;
+    min-width: 0;
+    max-width: 80px;
   }
-  .nav-item svg { width: 20px; height: 20px; }
-  .content { padding: 18px 16px 100px; }
-  .pos-grid { grid-template-columns: 1fr; height: auto; }
-  .field-row { grid-template-columns: 1fr; }
+  .nav-item svg { width: 22px; height: 22px; }
+  .nav-secondary { display: none; } /* Módulos secundarios se ocultan en mobile */
+  .nav-mas { display: flex; }       /* El botón "Más" aparece solo en mobile */
+
+  /* === ÁREA DE CONTENIDO === */
+  /* padding-top deja espacio para topbar (56) + 16, padding-bottom para bottombar (~64) + 28 */
+  .content { padding: 72px 14px 92px; }
+
+  /* === HEADERS DE PÁGINA === */
+  .page-header {
+    gap: 10px;
+    margin-bottom: 16px;
+    align-items: stretch;
+  }
   .page-title { font-size: 22px; }
+  .page-subtitle { font-size: 12px; }
+  .page-actions { width: 100%; }
+  .page-actions .btn { flex: 1; }
+
+  /* === STATS GRID: 2 columnas en mobile === */
+  .stats-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+  .stat { padding: 14px; }
+  .stat-label { font-size: 10px; }
+  .stat-value { font-size: 20px; }
+  .stat-sub { font-size: 11px; }
+  .stat-icon { width: 26px; height: 26px; top: 12px; right: 12px; }
+  .stat-icon svg { width: 14px; height: 14px; }
+
+  /* === CARDS: menos padding en mobile === */
+  .card { padding: 16px; }
+  .card-title { font-size: 14px; }
+
+  /* === TABLAS: ocultar columnas menos importantes === */
+  .hide-mobile { display: none !important; }
+  .table th, .table td { padding: 11px 10px; font-size: 13px; }
+
+  /* === FORMULARIOS === */
+  .field-row { grid-template-columns: 1fr; }
+  .input, .select, .textarea {
+    padding: 12px 14px;
+    font-size: 15px;     /* 15px+ evita el zoom automático de iOS al enfocar */
+    min-height: 44px;
+  }
+
+  /* === BOTONES: targets más grandes para dedo === */
+  .btn {
+    padding: 11px 16px;
+    min-height: 42px;
+    font-size: 14px;
+  }
+  .btn-icon { width: 38px; height: 38px; padding: 8px; }
+  .btn-sm { padding: 8px 12px; min-height: 34px; font-size: 12px; }
+  .btn-lg { padding: 14px 24px; min-height: 50px; font-size: 15px; }
+
+  /* === SEARCH BAR === */
+  .search-bar { padding: 0 14px; }
+  .search-bar input { padding: 12px 0; font-size: 15px; }
+
+  /* === MODALES: estilo "bottom sheet" (se deslizan desde abajo) === */
+  .modal-backdrop {
+    padding: 0;
+    align-items: flex-end;
+  }
+  .modal {
+    border-radius: 18px 18px 0 0;
+    max-width: 100%;
+    width: 100%;
+    max-height: 92vh;
+    animation: slideUpFromBottom 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+  @keyframes slideUpFromBottom {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+  }
+  .modal-header {
+    padding: 16px 20px 14px;
+    position: relative;
+  }
+  /* "Drag handle" decorativo arriba del modal — comunica que es un bottom sheet */
+  .modal-header::before {
+    content: '';
+    position: absolute;
+    top: 6px; left: 50%;
+    transform: translateX(-50%);
+    width: 36px; height: 4px;
+    background: var(--border-strong);
+    border-radius: 2px;
+  }
+  .modal-title { font-size: 17px; }
+  .modal-body { padding: 20px; }
+  .modal-footer {
+    padding: 14px 20px calc(14px + env(safe-area-inset-bottom));
+    flex-direction: column-reverse; /* en mobile el botón principal queda arriba (más cerca del dedo) */
+    gap: 8px;
+  }
+  .modal-footer .btn { width: 100%; }
+
+  /* === POS / PUNTO DE VENTA === */
+  .pos-grid { grid-template-columns: 1fr; height: auto; gap: 12px; }
+  .pos-products-list { max-height: 50vh; }
+  .pos-product { padding: 14px 12px; }
+  .pos-product-name { font-size: 15px; }
+  .pos-cart-items { max-height: 40vh; }
+
+  /* === ALERTS === */
+  .alert { padding: 11px 12px; font-size: 12px; }
+}
+
+/* En pantallas muy chicas (teléfonos compactos) — apretar más todavía */
+@media (max-width: 380px) {
+  .stats-grid { grid-template-columns: 1fr; }
+  .nav-item { font-size: 9px; }
+  .page-title { font-size: 20px; }
+  .stat-value { font-size: 19px; }
 }
 </style>
 </head>
 <body>
+  <!-- TOPBAR MOBILE (solo visible en pantallas chicas) -->
+  <header class="topbar-mobile" id="topbarMobile">
+    <div class="topbar-logo" id="topbarLogo">M</div>
+    <div class="topbar-name" id="topbarName">Mi Negocio</div>
+  </header>
+
   <div class="app">
     <!-- SIDEBAR (navegación) -->
     <aside class="sidebar" id="sidebar">
@@ -733,6 +898,7 @@ const Icons = {
   cash: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2"/><path d="M6 12h.01M18 12h.01"/></svg>',
   chart: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></svg>',
   settings: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>',
+  more: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>',
   plus: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>',
   edit: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>',
   trash: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>',
@@ -1081,16 +1247,16 @@ const Dashboard = {
       recent.appendChild(el('div', { class: 'card-title' }, 'Últimas ventas'));
       const tbl = el('div', { class: 'table-wrap', style: 'border:none' });
       const t = el('table', { class: 'table' });
-      t.innerHTML = `<thead><tr><th>Fecha</th><th>Items</th><th>Cliente</th><th>Pago</th><th class="num">Total</th></tr></thead>`;
+      t.innerHTML = `<thead><tr><th>Fecha</th><th class="hide-mobile">Items</th><th class="hide-mobile">Cliente</th><th class="hide-mobile">Pago</th><th class="num">Total</th></tr></thead>`;
       const tb = el('tbody');
       ventas.slice(0,6).forEach(v => {
         const cli = v.clienteId ? (DB.findById('clientes', v.clienteId)?.nombre || '—') : '—';
         const tr = el('tr');
         tr.innerHTML = `
           <td>${fmtDateTime(v.fecha)}</td>
-          <td>${v.items.length} producto(s)</td>
-          <td>${cli}</td>
-          <td><span class="badge badge-neutral">${this._labelPago(v.medioPago)}</span></td>
+          <td class="hide-mobile">${v.items.length} producto(s)</td>
+          <td class="hide-mobile">${cli}</td>
+          <td class="hide-mobile"><span class="badge badge-neutral">${this._labelPago(v.medioPago)}</span></td>
           <td class="num"><strong>${fmtMoney(v.total)}</strong></td>`;
         tb.appendChild(tr);
       });
@@ -1133,7 +1299,7 @@ const Productos = {
       } else {
         const wrap = el('div', { class: 'table-wrap' });
         const tbl = el('table', { class: 'table' });
-        tbl.innerHTML = `<thead><tr><th>Producto</th><th>Código</th><th class="num">Costo</th><th class="num">Precio</th><th class="num">Margen</th><th class="num">Stock</th><th></th></tr></thead>`;
+        tbl.innerHTML = `<thead><tr><th>Producto</th><th class="hide-mobile">Código</th><th class="num hide-mobile">Costo</th><th class="num">Precio</th><th class="num hide-mobile">Margen</th><th class="num">Stock</th><th></th></tr></thead>`;
         const tb = el('tbody');
         productos.forEach(p => {
           const margen = p.precio > 0 && p.costo > 0 ? ((p.precio - p.costo) / p.precio * 100) : 0;
@@ -1141,10 +1307,10 @@ const Productos = {
           const tr = el('tr');
           tr.innerHTML = `
             <td><strong>${p.nombre}</strong>${p.categoria ? `<div style="font-size:11px;color:var(--text-muted)">${p.categoria}</div>` : ''}</td>
-            <td><code style="font-size:12px;color:var(--text-muted)">${p.codigo || '—'}</code></td>
-            <td class="num">${fmtMoney(p.costo)}</td>
+            <td class="hide-mobile"><code style="font-size:12px;color:var(--text-muted)">${p.codigo || '—'}</code></td>
+            <td class="num hide-mobile">${fmtMoney(p.costo)}</td>
             <td class="num"><strong>${fmtMoney(p.precio)}</strong></td>
-            <td class="num">${margen.toFixed(1)}%</td>
+            <td class="num hide-mobile">${margen.toFixed(1)}%</td>
             <td class="num">${stockBajo ? `<span class="badge badge-warning">${p.stock} ${p.unidad||''}</span>` : `${p.stock} ${p.unidad||''}`}</td>
             <td class="actions"></td>`;
           const td = tr.lastElementChild;
@@ -1527,18 +1693,18 @@ const Historial = {
 
     const wrap = el('div', { class: 'table-wrap' });
     const t = el('table', { class: 'table' });
-    t.innerHTML = `<thead><tr><th>Fecha</th><th>Items</th><th>Cliente</th><th>Pago</th><th class="num">Total</th><th class="num">Ganancia</th><th></th></tr></thead>`;
+    t.innerHTML = `<thead><tr><th>Fecha</th><th class="hide-mobile">Items</th><th class="hide-mobile">Cliente</th><th class="hide-mobile">Pago</th><th class="num">Total</th><th class="num hide-mobile">Ganancia</th><th></th></tr></thead>`;
     const tb = el('tbody');
     ventas.forEach(v => {
       const cli = v.clienteId ? (DB.findById('clientes', v.clienteId)?.nombre || '—') : '—';
       const tr = el('tr');
       tr.innerHTML = `
         <td>${fmtDateTime(v.fecha)}</td>
-        <td>${v.items.length}</td>
-        <td>${cli}</td>
-        <td><span class="badge badge-neutral">${Dashboard._labelPago(v.medioPago)}</span></td>
+        <td class="hide-mobile">${v.items.length}</td>
+        <td class="hide-mobile">${cli}</td>
+        <td class="hide-mobile"><span class="badge badge-neutral">${Dashboard._labelPago(v.medioPago)}</span></td>
         <td class="num"><strong>${fmtMoney(v.total)}</strong></td>
-        <td class="num" style="color:var(--success)">${fmtMoney(v.ganancia)}</td>
+        <td class="num hide-mobile" style="color:var(--success)">${fmtMoney(v.ganancia)}</td>
         <td class="actions"></td>`;
       const td = tr.lastElementChild;
       td.appendChild(el('button', { class:'btn btn-ghost btn-sm', onclick:()=>Historial.openDetail(v) }, 'Ver'));
@@ -1644,7 +1810,7 @@ const Clientes = {
       }
       const wrap = el('div', { class: 'table-wrap' });
       const t = el('table', { class: 'table' });
-      t.innerHTML = `<thead><tr><th>Nombre</th><th>Teléfono</th><th class="num">Saldo</th><th></th></tr></thead>`;
+      t.innerHTML = `<thead><tr><th>Nombre</th><th class="hide-mobile">Teléfono</th><th class="num">Saldo</th><th></th></tr></thead>`;
       const tb = el('tbody');
       clientes.forEach(c => {
         const tr = el('tr');
@@ -1662,7 +1828,7 @@ const Clientes = {
           : '';
         tr.innerHTML = `
           <td><strong>${c.nombre}</strong>${c.email ? `<div style="font-size:11px;color:var(--text-muted)">${c.email}</div>` : ''}</td>
-          <td>${c.telefono || '—'}</td>
+          <td class="hide-mobile">${c.telefono || '—'}</td>
           <td class="num"><span class="badge ${saldoClass}">${saldoText}</span>${moraText}</td>
           <td class="actions"></td>`;
         const td = tr.lastElementChild;
@@ -1875,11 +2041,11 @@ const Compras = {
     }
     const wrap = el('div', { class: 'table-wrap' });
     const t = el('table', { class: 'table' });
-    t.innerHTML = `<thead><tr><th>Fecha</th><th>Proveedor</th><th>Items</th><th class="num">Total</th></tr></thead>`;
+    t.innerHTML = `<thead><tr><th>Fecha</th><th>Proveedor</th><th class="hide-mobile">Items</th><th class="num">Total</th></tr></thead>`;
     const tb = el('tbody');
     compras.forEach(c => {
       const tr = el('tr');
-      tr.innerHTML = `<td>${fmtDateTime(c.fecha)}</td><td>${c.proveedor||'—'}</td><td>${c.items.length}</td><td class="num"><strong>${fmtMoney(c.total)}</strong></td>`;
+      tr.innerHTML = `<td>${fmtDateTime(c.fecha)}</td><td>${c.proveedor||'—'}</td><td class="hide-mobile">${c.items.length}</td><td class="num"><strong>${fmtMoney(c.total)}</strong></td>`;
       tb.appendChild(tr);
     });
     t.appendChild(tb);
@@ -2027,14 +2193,14 @@ const Caja = {
 
     const wrap = el('div', { class: 'table-wrap' });
     const t = el('table', { class: 'table' });
-    t.innerHTML = `<thead><tr><th>Hora</th><th>Concepto</th><th>Origen</th><th class="num">Monto</th><th></th></tr></thead>`;
+    t.innerHTML = `<thead><tr><th>Hora</th><th>Concepto</th><th class="hide-mobile">Origen</th><th class="num">Monto</th><th></th></tr></thead>`;
     const tb = el('tbody');
     movs.sort((a,b) => b.fecha - a.fecha).forEach(m => {
       const tr = el('tr');
       tr.innerHTML = `
         <td>${new Date(m.fecha).toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit'})}</td>
         <td>${m.concepto}</td>
-        <td><span class="badge badge-neutral">${m.origen||'manual'}</span></td>
+        <td class="hide-mobile"><span class="badge badge-neutral">${m.origen||'manual'}</span></td>
         <td class="num"><strong style="color:${m.tipo==='ingreso'?'var(--success)':'var(--danger)'}">${m.tipo==='ingreso'?'+':'−'} ${fmtMoney(m.monto)}</strong></td>
         <td class="actions"></td>`;
       const td = tr.lastElementChild;
@@ -2249,10 +2415,10 @@ const Reportes = {
       tER.innerHTML = `<thead><tr>
         <th>Mes</th>
         <th class="num">Ventas</th>
-        <th class="num">Costo merc.</th>
+        <th class="num hide-mobile">Costo merc.</th>
         <th class="num">Gan. bruta</th>
-        <th class="num">Margen</th>
-        <th class="num">Gastos</th>
+        <th class="num hide-mobile">Margen</th>
+        <th class="num hide-mobile">Gastos</th>
         <th class="num">Gan. neta</th>
       </tr></thead>`;
       const tbER = el('tbody');
@@ -2262,10 +2428,10 @@ const Reportes = {
         tr.innerHTML = `
           <td style="text-transform:capitalize"><strong>${m.label}</strong></td>
           <td class="num">${fmtMoney(m.ventas)}</td>
-          <td class="num" style="color:var(--text-muted)">${fmtMoney(m.costo)}</td>
+          <td class="num hide-mobile" style="color:var(--text-muted)">${fmtMoney(m.costo)}</td>
           <td class="num">${fmtMoney(m.gBruta)}</td>
-          <td class="num">${m.ventas > 0 ? m.margen.toFixed(1) + '%' : '—'}</td>
-          <td class="num" style="color:var(--text-muted)">${fmtMoney(m.gastos)}</td>
+          <td class="num hide-mobile">${m.ventas > 0 ? m.margen.toFixed(1) + '%' : '—'}</td>
+          <td class="num hide-mobile" style="color:var(--text-muted)">${fmtMoney(m.gastos)}</td>
           <td class="num"><strong style="color:${colorNeto}">${fmtMoney(m.gNeta)}</strong></td>`;
         if (!m.tieneMov) tr.style.opacity = '0.45';
         tbER.appendChild(tr);
@@ -2277,10 +2443,10 @@ const Reportes = {
       trTot.innerHTML = `
         <td><strong>Total 6 meses</strong></td>
         <td class="num"><strong>${fmtMoney(totales.ventas)}</strong></td>
-        <td class="num"><strong>${fmtMoney(totales.costo)}</strong></td>
+        <td class="num hide-mobile"><strong>${fmtMoney(totales.costo)}</strong></td>
         <td class="num"><strong>${fmtMoney(totales.gBruta)}</strong></td>
-        <td class="num"><strong>${totales.ventas > 0 ? margenTot.toFixed(1) + '%' : '—'}</strong></td>
-        <td class="num"><strong>${fmtMoney(totales.gastos)}</strong></td>
+        <td class="num hide-mobile"><strong>${totales.ventas > 0 ? margenTot.toFixed(1) + '%' : '—'}</strong></td>
+        <td class="num hide-mobile"><strong>${fmtMoney(totales.gastos)}</strong></td>
         <td class="num"><strong style="color:${colorTot}">${fmtMoney(totales.gNeta)}</strong></td>`;
       tbER.appendChild(trTot);
       tER.appendChild(tbER);
@@ -2440,13 +2606,13 @@ const Configuracion = {
    6. NAVEGACIÓN / ROUTER
    ============================================================ */
 const NAV_ITEMS = [
-  { id: 'dashboard', label: 'Inicio', icon: 'dashboard', module: Dashboard, alwaysVisible: true },
-  { id: 'productos', label: 'Productos', icon: 'box', module: Productos },
-  { id: 'ventas', label: 'Vender', icon: 'cart', module: Ventas },
+  { id: 'dashboard', label: 'Inicio', icon: 'dashboard', module: Dashboard, alwaysVisible: true, mobilePriority: true },
+  { id: 'productos', label: 'Productos', icon: 'box', module: Productos, mobilePriority: true },
+  { id: 'ventas', label: 'Vender', icon: 'cart', module: Ventas, mobilePriority: true },
   { id: 'historial', label: 'Historial', icon: 'chart', module: Historial, parent: 'ventas' },
   { id: 'clientes', label: 'Clientes', icon: 'users', module: Clientes },
   { id: 'compras', label: 'Compras', icon: 'truck', module: Compras },
-  { id: 'caja', label: 'Caja', icon: 'cash', module: Caja },
+  { id: 'caja', label: 'Caja', icon: 'cash', module: Caja, mobilePriority: true },
   { id: 'reportes', label: 'Reportes', icon: 'chart', module: Reportes },
   { id: 'config', label: 'Ajustes', icon: 'settings', module: Configuracion, alwaysVisible: true }
 ];
@@ -2455,12 +2621,54 @@ function buildNav() {
   const nav = $('#nav');
   nav.innerHTML = '';
   NAV_ITEMS.filter(i => !i.parent && (i.alwaysVisible || Config.modulos[i.id])).forEach(item => {
-    const btn = el('button', { class: 'nav-item', 'data-id': item.id, onclick: () => navigate(item.id) },
+    const btn = el('button', {
+      class: 'nav-item ' + (item.mobilePriority ? 'nav-primary' : 'nav-secondary'),
+      'data-id': item.id,
+      onclick: () => navigate(item.id)
+    },
       el('span', { html: Icons[item.icon] }),
       el('span', {}, item.label)
     );
     nav.appendChild(btn);
   });
+  // Botón "Más" — solo visible en mobile, abre las opciones secundarias
+  const masBtn = el('button', {
+    class: 'nav-item nav-mas',
+    onclick: () => openMoreMenu()
+  },
+    el('span', { html: Icons.more }),
+    el('span', {}, 'Más')
+  );
+  nav.appendChild(masBtn);
+}
+
+/**
+ * Abre el menú "Más" en mobile con los módulos secundarios
+ * (Clientes, Compras, Historial, Reportes, Ajustes).
+ */
+function openMoreMenu() {
+  const items = NAV_ITEMS.filter(i =>
+    !i.parent &&
+    !i.mobilePriority &&
+    (i.alwaysVisible || Config.modulos[i.id])
+  );
+  const grid = el('div', { style: 'display:grid;grid-template-columns:1fr 1fr;gap:10px' });
+  items.forEach(item => {
+    const card = el('button', {
+      class: 'btn btn-ghost',
+      style: 'flex-direction:column;height:auto;padding:18px 12px;gap:8px;font-size:13px',
+      onclick: () => { backdrop.remove(); navigate(item.id); }
+    },
+      el('span', { html: Icons[item.icon], style: 'width:24px;height:24px;display:block' }),
+      el('span', {}, item.label)
+    );
+    grid.appendChild(card);
+  });
+  const { modal: m, body, close } = modal({
+    title: 'Más opciones',
+    body: grid
+  });
+  const backdrop = m.parentElement;
 }
 
 function navigate(id) {
@@ -2485,13 +2693,25 @@ function applyBranding() {
   $('#brandName').textContent = Config.negocio.nombre || 'Mi Negocio';
   document.title = Config.negocio.nombre + ' · Gestión';
   const logoEl = $('#brandLogo');
+  const topbarLogoEl = $('#topbarLogo');
+  const topbarNameEl = $('#topbarName');
+  const inicial = (Config.negocio.nombre || 'M').charAt(0).toUpperCase();
   if (Config.negocio.logo) {
     logoEl.style.backgroundImage = `url('${Config.negocio.logo}')`;
     logoEl.textContent = '';
+    if (topbarLogoEl) {
+      topbarLogoEl.style.backgroundImage = `url('${Config.negocio.logo}')`;
+      topbarLogoEl.textContent = '';
+    }
   } else {
     logoEl.style.backgroundImage = '';
-    logoEl.textContent = (Config.negocio.nombre || 'M').charAt(0).toUpperCase();
+    logoEl.textContent = inicial;
+    if (topbarLogoEl) {
+      topbarLogoEl.style.backgroundImage = '';
+      topbarLogoEl.textContent = inicial;
+    }
   }
+  if (topbarNameEl) topbarNameEl.textContent = Config.negocio.nombre || 'Mi Negocio';
 }
 
 /* ============================================================
